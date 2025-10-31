@@ -241,19 +241,19 @@ export const usePuterStore = create<PuterStore>((set, get) => {
         }
     };
 
-    const init = (): void => {
+    const init = async (): Promise<void> => {
         const puter = getPuter();
         if (puter) {
             set({ puterReady: true });
-            checkAuthStatus();
+            await checkAuthStatus(); // ✅ wait for completion
             return;
         }
 
-        const interval = setInterval(() => {
+        const interval = setInterval(async () => {
             if (getPuter()) {
                 clearInterval(interval);
                 set({ puterReady: true });
-                checkAuthStatus();
+                await checkAuthStatus(); // ✅ await here too
             }
         }, 100);
 
@@ -264,6 +264,7 @@ export const usePuterStore = create<PuterStore>((set, get) => {
             }
         }, 10000);
     };
+
 
     const write = async (path: string, data: string | File | Blob) => {
         const puter = getPuter();
